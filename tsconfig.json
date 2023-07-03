@@ -9,8 +9,7 @@
     "declaration": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }
