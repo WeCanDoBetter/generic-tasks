@@ -1,24 +1,30 @@
 # @wecandobetter/generic-tasks
 
+[![npm version](https://badge.fury.io/js/%40wecandobetter%2Fgeneric-tasks.svg)](https://badge.fury.io/js/%40wecandobetter%2Fgeneric-tasks)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A TypeScript library designed to create, manage, and execute complex tasks and
 pipelines, allowing detailed control and logging of each step and the context.
 This package is perfect for handling workflows, data processing, or any
 situation where tasks need to be executed in a controlled and detailed manner.
 
-## Features 💫
+## 💫 Features
 
-- 📦 **Built with TypeScript**: Type safety and IntelliSense support out of the
-  box.
 - ⛓ **Tasks and Pipelines**: Easily create tasks and pipelines with any level of
   complexity.
 - 🔀 **Step Management**: Add steps to your tasks, each with their own input,
   output, and error handling.
 - 🔄 **Context Handling**: Each task and step has access to a context, allowing
-  detailed logging and control.
-- ⚡ **Async Support**: Steps can be asynchronous, supporting Promise based
+  detailed logging and control. The context is passed to each step, and can be
+  modified by each step.
+- ⚡ **Async Support**: Steps are asynchronous, supporting Promise based
   operations.
 - 🛠 **Detailed Error Handling**: Custom `TaskError` and `PipelineError` classes
   provide detailed error information, including the context.
+- 📦 **Built with TypeScript**: Type safety and IntelliSense support out of the
+  box. No need to install additional packages for TypeScript support.
+- 📦 **No Dependencies**: No external dependencies. This package is built with
+  TypeScript and uses only the standard library.
 
 ## Installation 📦
 
@@ -34,21 +40,21 @@ Or via yarn:
 yarn add @wecandobetter/generic-tasks
 ```
 
-## Usage Examples 🚀
+## 🚀 Usage Examples
 
 Here's a basic example of creating a task with two steps and running it:
 
 ```typescript
-import { type BaseContext, Task } from "@wecandobetter/generic-tasks";
+import { Task } from "@wecandobetter/generic-tasks";
 
 const task = new Task<number, string>({
   name: "My Task",
   steps: [
-    async (input: number, context: BaseContext) => {
+    async (input: number, context) => {
       // step 1
       return `Step 1: ${input.toString()}`;
     },
-    async (input: string, context: BaseContext) => {
+    async (input: string, context) => {
       // step 2
       return `${input} -> Step 2 done!`;
     },
@@ -58,7 +64,7 @@ const task = new Task<number, string>({
 const input = 5;
 const context: BaseContext = { steps: [] };
 
-task.run(input, context).then((output) => console.log(output));
+task.run(input, context).then((output) => console.log(output.output));
 ```
 
 Output:
@@ -71,13 +77,13 @@ Here's a more complex example of creating a pipeline with two tasks and running
 it:
 
 ```typescript
-import { type BaseContext, Pipeline, Task } from "@wecandobetter/generic-tasks";
+import { Pipeline, Task } from "@wecandobetter/generic-tasks";
 
 // Define two tasks
 const task1 = new Task<number, string>({
   name: "Task1",
   steps: [
-    async (input: number, context: BaseContext) => {
+    async (input: number, context) => {
       return `Task 1: ${input.toString()}`;
     },
   ],
@@ -86,7 +92,7 @@ const task1 = new Task<number, string>({
 const task2 = new Task<string, string>({
   name: "Task2",
   steps: [
-    async (input: string, context: BaseContext) => {
+    async (input: string, context) => {
       return `${input} -> Task 2 done!`;
     },
   ],
@@ -96,12 +102,10 @@ const task2 = new Task<string, string>({
 const pipeline = new Pipeline<number, string>({
   name: "My Pipeline",
   tasks: [
+    task1,
     {
-      selector: (input: number) => input, // selector is optional
-      task: task1,
-    },
-    {
-      selector: (input: string) => input, // selector is optional
+      // Use the selector to select the input for the next task (optional)
+      selector: (input: string, context) => input,
       task: task2,
     },
   ],
@@ -112,7 +116,7 @@ const input = 5;
 const context: BaseContext = { steps: [] };
 
 // Run the pipeline
-pipeline.run(input, context).then((output) => console.log(output));
+pipeline.run(input, context).then((output) => console.log(output.output));
 ```
 
 Output:
@@ -121,7 +125,7 @@ Output:
 Task 1: 5 -> Task 2 done!
 ```
 
-## API Reference 📚
+## 📚 API Reference
 
 Detailed API documentation can be found in the TypeScript interfaces and classes
 in the code. The primary components are:
@@ -138,14 +142,23 @@ in the code. The primary components are:
 - `TaskError`: A custom `Error` class for errors occurring in a `Task`.
 - `PipelineError`: A custom `Error` class for errors occurring in a `Pipeline`.
 
-## Contributing 🤝
+## 🤝 Contributing
 
 Contributions, issues and feature requests are welcome! Feel free to check
 [issues page](https://github.com/wecandobetter/generic-tasks/issues).
 
-## License 📄
+## 📜 License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE). Feel free to use it
+for your own projects.
 
-Enjoy the package! If you encounter any problems or have suggestions for
-improvements, feel free to open an issue or a pull request.
+## 🙏 Notes
+
+Happy coding! 😊
+
+If you encounter any problems or have suggestions for improvements, feel free to
+open an issue or a pull request.
+
+Give a ⭐️ if you like this project!
+
+Coded with ❤️ by [We Can Do Better](https://wcdb.life).
