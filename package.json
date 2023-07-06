@@ -22,6 +22,9 @@
     "generic pipelines",
     "generic pipeline tasks"
   ],
+  "files": [
+    "dist"
+  ],
   "author": "We Can Do Better <contact@wcdb.life> (https://wcdb.life)",
   "contributors": [
     {
