@@ -6,9 +6,9 @@ import { PipelineError, TaskError } from "../errors.js";
  * The configuration for a pipeline. The selector is used to select the input for the task.
  * @template Context The type of the context.
  */
-export interface PipelineConfiguration<
+export type PipelineConfiguration<
   Context extends BaseContext = BaseContext,
-> {
+> = Task<unknown, unknown, Context> | {
   /**
    * The selector for the task. The selector is used to select the input for the task.
    * @param input The output of the previous task.
@@ -18,7 +18,7 @@ export interface PipelineConfiguration<
   selector?: (input: unknown, context: Context) => unknown;
   /** The task to run. */
   task: Task<unknown, unknown, Context>;
-}
+};
 
 /**
  * The options for a pipeline. The name is used to identify the pipeline.
@@ -88,8 +88,12 @@ export class Pipeline<
     let output: any = input;
     for (const task of this.tasks) {
       try {
-        const taskInput = task.selector?.(output, ctx) ?? output;
-        const { output: taskOutput } = await task.task.run(taskInput, ctx);
+        const taskFn = "task" in task ? task.task : task;
+        const taskInput = "selector" in task
+          ? task.selector?.(output, ctx)
+          : output;
+
+        const { output: taskOutput } = await taskFn.run(taskInput, ctx);
         output = taskOutput;
       } catch (error) {
         throw new PipelineError(
